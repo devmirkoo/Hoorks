@@ -53,12 +53,22 @@ export default function SetupPage() {
       <div className="w-full max-w-md animate-fade-in">
         {/* Logo */}
         <div className="flex flex-col items-center gap-3 mb-8">
-          <div className="flex size-14 items-center justify-center rounded-xl bg-primary animate-pulse-glow">
-            <Zap className="size-7 text-primary-foreground" />
-          </div>
+          <div 
+            className="size-14 bg-primary animate-pulse-glow" 
+            style={{ 
+              maskImage: "url(/logo.svg)", 
+              maskSize: "contain", 
+              maskRepeat: "no-repeat", 
+              maskPosition: "center",
+              WebkitMaskImage: "url(/logo.svg)", 
+              WebkitMaskSize: "contain", 
+              WebkitMaskRepeat: "no-repeat", 
+              WebkitMaskPosition: "center"
+            }} 
+          />
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight">
-              Roblox-Discord Bridge
+              Hoorks
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
               Initial Setup

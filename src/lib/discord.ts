@@ -65,7 +65,7 @@ function buildEmbed(data: TransactionData) {
           },
         ],
         timestamp: data.timestamp,
-        footer: { text: "Roblox-Discord Bridge" },
+        footer: { text: "Hoorks" },
       },
     ],
   };
@@ -105,10 +105,10 @@ export async function sendTestWebhook(webhookUrl: string): Promise<boolean> {
           {
             title: "🧪 Test Notification",
             description:
-              "This is a test message from your Roblox-Discord Bridge. If you see this, your webhook is configured correctly!",
+              "This is a test message from Hoorks. If you see this, your webhook is configured correctly!",
             color: 3066993,
             timestamp: new Date().toISOString(),
-            footer: { text: "Roblox-Discord Bridge — Test" },
+            footer: { text: "Hoorks — Test" },
           },
         ],
       }),

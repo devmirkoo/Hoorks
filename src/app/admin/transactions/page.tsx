@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AdminSidebar } from "@/components/admin-sidebar";
 import { TransactionTable } from "@/components/transaction-table";
+import type { Transaction } from "@/components/transaction-table";
 import {
   Card,
   CardContent,
@@ -12,31 +13,64 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Search,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  SlidersHorizontal,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-interface Transaction {
-  id: string;
-  user_id: string;
-  product_id: string;
-  gamepass_id?: string | null;
-  is_a_gift: number;
-  gifter_id?: string | null;
-  amount: number;
-  universe_id: string;
-  place_id: string;
-  transaction_id: string;
-  timestamp: string;
-  created_at: string;
-}
+type SortKey =
+  | "user_id"
+  | "product_id"
+  | "amount"
+  | "transaction_id"
+  | "is_a_gift"
+  | "universe_id"
+  | "created_at";
+
+type SortDirection = "asc" | "desc";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userIdFilter, setUserIdFilter] = useState("");
   const [offset, setOffset] = useState(0);
   const [total, setTotal] = useState(0);
   const limit = 20;
+
+  // Filters
+  const [userIdFilter, setUserIdFilter] = useState("");
+  const [transactionIdFilter, setTransactionIdFilter] = useState("");
+  const [productIdFilter, setProductIdFilter] = useState("");
+  const [gamepassIdFilter, setGamepassIdFilter] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Sort
+  const [sortBy, setSortBy] = useState<SortKey>("created_at");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("desc");
+
+  // Gift filter
+  const [giftFilter, setGiftFilter] = useState<boolean | null>(null);
+
+  const hasActiveFilters =
+    userIdFilter ||
+    transactionIdFilter ||
+    productIdFilter ||
+    gamepassIdFilter ||
+    giftFilter !== null;
+
+  const activeFilterCount = [
+    userIdFilter,
+    transactionIdFilter,
+    productIdFilter,
+    gamepassIdFilter,
+    giftFilter !== null ? "x" : "",
+  ].filter(Boolean).length;
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -44,25 +78,26 @@ export default function TransactionsPage() {
       const params = new URLSearchParams({
         limit: String(limit),
         offset: String(offset),
-      });
-      if (userIdFilter) params.set("userId", userIdFilter);
-
-      const res = await fetch(`/api/items?${params}`, {
-        headers: {
-          // We use the admin session cookie for this page,
-          // but the API needs an API key. So we'll use the admin stats endpoint instead
-        },
+        sortBy,
+        sortOrder,
       });
 
-      // Since /api/items requires API key, we'll use a direct DB fetch via admin endpoint
-      const statsRes = await fetch("/api/admin/stats");
-      if (!statsRes.ok) throw new Error("Failed to fetch");
-      const data = await statsRes.json();
+      if (userIdFilter.trim()) params.set("userId", userIdFilter.trim());
+      if (transactionIdFilter.trim())
+        params.set("transactionId", transactionIdFilter.trim());
+      if (productIdFilter.trim())
+        params.set("productId", productIdFilter.trim());
+      if (gamepassIdFilter.trim())
+        params.set("gamepassId", gamepassIdFilter.trim());
+      if (giftFilter !== null)
+        params.set("isAGift", giftFilter ? "true" : "false");
 
-      // For now, use the recent transactions from stats
-      // In production, you'd create a separate admin transactions endpoint
+      const res = await fetch(`/api/admin/transactions?${params}`);
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+
       setTransactions(
-        data.recentTransactions?.map((row: Record<string, unknown>) => ({
+        data.data?.map((row: Record<string, unknown>) => ({
           id: String(row.id),
           user_id: String(row.user_id),
           product_id: String(row.product_id),
@@ -77,17 +112,46 @@ export default function TransactionsPage() {
           created_at: String(row.created_at),
         })) || []
       );
-      setTotal(data.stats?.totalTransactions || 0);
+      setTotal(data.pagination?.total || 0);
     } catch {
       toast.error("Failed to fetch transactions");
     } finally {
       setLoading(false);
     }
-  }, [offset, userIdFilter]);
+  }, [
+    offset,
+    userIdFilter,
+    transactionIdFilter,
+    productIdFilter,
+    gamepassIdFilter,
+    giftFilter,
+    sortBy,
+    sortOrder,
+  ]);
 
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
+
+  const clearAllFilters = () => {
+    setUserIdFilter("");
+    setTransactionIdFilter("");
+    setProductIdFilter("");
+    setGamepassIdFilter("");
+    setGiftFilter(null);
+    setOffset(0);
+  };
+
+  const handleSort = (key: SortKey, direction: SortDirection) => {
+    setSortBy(key);
+    setSortOrder(direction);
+    setOffset(0);
+  };
+
+  const handleGiftFilterChange = (val: boolean | null) => {
+    setGiftFilter(val);
+    setOffset(0);
+  };
 
   const exportToJson = () => {
     const blob = new Blob([JSON.stringify(transactions, null, 2)], {
@@ -124,27 +188,149 @@ export default function TransactionsPage() {
           </div>
 
           {/* Filters */}
-          <div className="flex gap-3 animate-slide-up">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <Input
-                placeholder="Filter by User ID..."
-                value={userIdFilter}
-                onChange={(e) => {
-                  setUserIdFilter(e.target.value);
-                  setOffset(0);
-                }}
-                className="pl-9"
-              />
+          <div className="flex flex-col gap-3 animate-slide-up">
+            {/* Primary filter bar */}
+            <div className="flex gap-3 items-center">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input
+                  id="filter-user-id"
+                  placeholder="Filter by User ID..."
+                  value={userIdFilter}
+                  onChange={(e) => {
+                    setUserIdFilter(e.target.value);
+                    setOffset(0);
+                  }}
+                  className="pl-9"
+                />
+              </div>
+
+              <Button
+                variant={showFilters ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="gap-2"
+              >
+                <SlidersHorizontal className="size-4" />
+                Filters
+                {activeFilterCount > 0 && (
+                  <Badge
+                    variant="default"
+                    className="size-5 p-0 flex items-center justify-center text-[10px] rounded-full"
+                  >
+                    {activeFilterCount}
+                  </Badge>
+                )}
+              </Button>
+
+              {hasActiveFilters && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAllFilters}
+                  className="gap-1.5 text-muted-foreground hover:text-destructive"
+                >
+                  <X className="size-3.5" />
+                  Clear all
+                </Button>
+              )}
+            </div>
+
+            {/* Expandable filter row */}
+            <div
+              className={cn(
+                "grid grid-cols-1 sm:grid-cols-3 gap-3 overflow-hidden transition-all duration-300 ease-out",
+                showFilters
+                  ? "max-h-40 opacity-100"
+                  : "max-h-0 opacity-0 pointer-events-none"
+              )}
+            >
+              <div className="relative">
+                <Input
+                  id="filter-transaction-id"
+                  placeholder="Transaction ID..."
+                  value={transactionIdFilter}
+                  onChange={(e) => {
+                    setTransactionIdFilter(e.target.value);
+                    setOffset(0);
+                  }}
+                  className="text-sm"
+                />
+                {transactionIdFilter && (
+                  <button
+                    onClick={() => {
+                      setTransactionIdFilter("");
+                      setOffset(0);
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="relative">
+                <Input
+                  id="filter-product-id"
+                  placeholder="Product ID..."
+                  value={productIdFilter}
+                  onChange={(e) => {
+                    setProductIdFilter(e.target.value);
+                    setOffset(0);
+                  }}
+                  className="text-sm"
+                />
+                {productIdFilter && (
+                  <button
+                    onClick={() => {
+                      setProductIdFilter("");
+                      setOffset(0);
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="relative">
+                <Input
+                  id="filter-gamepass-id"
+                  placeholder="Gamepass ID..."
+                  value={gamepassIdFilter}
+                  onChange={(e) => {
+                    setGamepassIdFilter(e.target.value);
+                    setOffset(0);
+                  }}
+                  className="text-sm"
+                />
+                {gamepassIdFilter && (
+                  <button
+                    onClick={() => {
+                      setGamepassIdFilter("");
+                      setOffset(0);
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Table */}
-          <Card className="glow-border animate-slide-up" style={{ animationDelay: "100ms" }}>
+          <Card
+            className="glow-border animate-slide-up"
+            style={{ animationDelay: "100ms" }}
+          >
             <CardHeader>
               <CardTitle>Transaction History</CardTitle>
               <CardDescription>
-                {total} total transactions
+                {total} total transaction{total !== 1 ? "s" : ""}
+                {hasActiveFilters && (
+                  <span className="text-primary ml-1">(filtered)</span>
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -153,7 +339,14 @@ export default function TransactionsPage() {
                   <div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : (
-                <TransactionTable transactions={transactions} />
+                <TransactionTable
+                  transactions={transactions}
+                  serverSide
+                  onSort={handleSort}
+                  onGiftFilterChange={handleGiftFilterChange}
+                  currentSort={{ key: sortBy, direction: sortOrder }}
+                  currentGiftFilter={giftFilter}
+                />
               )}
 
               {/* Pagination */}

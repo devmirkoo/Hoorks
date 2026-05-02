@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     0
   );
   const userId = searchParams.get("userId");
+  const transactionId = searchParams.get("transactionId")
 
   const database = await db();
 
@@ -40,6 +41,19 @@ export async function GET(request: NextRequest) {
     countSql += " WHERE user_id = ?";
     args.push(userId);
     countArgs.push(userId);
+  }
+
+  if (transactionId) {
+    if (!userId) {
+      sql += " WHERE id = ?";
+      countSql += " WHERE id = ?"
+      
+    } else {
+      sql += " AND id = ?";
+      countSql += " AND id = ?"
+    }
+    args.push(transactionId)
+    countArgs.push(transactionId)
   }
 
   sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?";

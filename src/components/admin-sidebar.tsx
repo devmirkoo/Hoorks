@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { toast } from "sonner";
 import {
   LayoutDashboard,
@@ -13,6 +14,7 @@ import {
   Settings,
   LogOut,
   Zap,
+  BookOpen,
 } from "lucide-react";
 
 const navItems = [
@@ -38,18 +40,31 @@ export function AdminSidebar() {
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r border-border bg-sidebar">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 px-6">
-        <div className="flex size-8 items-center justify-center rounded-md bg-primary">
-          <Zap data-icon="inline-start" className="text-primary-foreground" />
+      <div className="flex h-16 items-center justify-between px-6">
+        <div className="flex items-center gap-3">
+          <div 
+            className="size-8 bg-primary" 
+            style={{ 
+              maskImage: "url(/logo.svg)", 
+              maskSize: "contain", 
+              maskRepeat: "no-repeat", 
+              maskPosition: "center",
+              WebkitMaskImage: "url(/logo.svg)", 
+              WebkitMaskSize: "contain", 
+              WebkitMaskRepeat: "no-repeat", 
+              WebkitMaskPosition: "center"
+            }} 
+          />
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold tracking-tight text-sidebar-foreground">
+              Hoorks
+            </span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+              Admin Panel
+            </span>
+          </div>
         </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-semibold tracking-tight text-sidebar-foreground">
-            RDB Bridge
-          </span>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
-            Admin Panel
-          </span>
-        </div>
+        <ThemeToggle />
       </div>
 
       <Separator />
@@ -74,6 +89,18 @@ export function AdminSidebar() {
             </Link>
           );
         })}
+
+        {/* Docs link */}
+        <Separator className="my-2" />
+        <Link href="/docs" target="_blank">
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 font-normal text-muted-foreground hover:text-foreground"
+          >
+            <BookOpen data-icon="inline-start" />
+            API Docs
+          </Button>
+        </Link>
       </nav>
 
       <Separator />

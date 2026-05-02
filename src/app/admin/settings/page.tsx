@@ -70,6 +70,7 @@ export default function SettingsPage() {
             <p className="text-muted-foreground mt-1">Configure your bridge integrations</p>
           </div>
 
+          {/* Discord Webhook */}
           <Card className="glow-border animate-slide-up max-w-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

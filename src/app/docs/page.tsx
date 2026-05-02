@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Zap, ArrowLeft, Copy } from "lucide-react";
 
 function CodeBlock({ children, title }: { children: string; title?: string }) {
@@ -27,17 +28,30 @@ export default function DocsPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
         <div className="mx-auto max-w-4xl flex items-center justify-between px-6 h-14">
           <div className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-md bg-primary">
-              <Zap className="size-4 text-primary-foreground" />
-            </div>
-            <span className="font-semibold text-sm tracking-tight">RDB Bridge</span>
+            <div 
+              className="size-7 bg-primary" 
+              style={{ 
+                maskImage: "url(/logo.svg)", 
+                maskSize: "contain", 
+                maskRepeat: "no-repeat", 
+                maskPosition: "center",
+                WebkitMaskImage: "url(/logo.svg)", 
+                WebkitMaskSize: "contain", 
+                WebkitMaskRepeat: "no-repeat", 
+                WebkitMaskPosition: "center"
+              }} 
+            />
+            <span className="font-semibold text-sm tracking-tight">Hoorks</span>
           </div>
-          <Link href="/">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft data-icon="inline-start" />
-              Back
-            </Button>
-          </Link>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <Link href="/">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft data-icon="inline-start" />
+                Back
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -51,7 +65,7 @@ export default function DocsPage() {
             Documentation
           </h1>
           <p className="text-muted-foreground max-w-2xl leading-relaxed">
-            Everything you need to integrate your Roblox game with the Discord Bridge API.
+            Everything you need to integrate your Roblox game with the Hoorks API.
             Follow these examples to start sending purchase notifications.
           </p>
         </div>
@@ -168,10 +182,15 @@ X-API-KEY: rdb_a1b2c3d4e5f6...
                         <td className="px-4 py-2 text-muted-foreground">0</td>
                         <td className="px-4 py-2 text-muted-foreground">Pagination offset</td>
                       </tr>
-                      <tr>
+                      <tr className="border-b border-border">
                         <td className="px-4 py-2 font-mono text-primary text-xs">userId</td>
                         <td className="px-4 py-2 text-muted-foreground">—</td>
                         <td className="px-4 py-2 text-muted-foreground">Filter by user</td>
+                      </tr>
+                      <tr>
+                        <td className="px-4 py-2 font-mono text-primary text-xs">transactionId</td>
+                        <td className="px-4 py-2 text-muted-foreground">—</td>
+                        <td className="px-4 py-2 text-muted-foreground">Filter by transaction ID. If provided, other filters are ignored.</td>
                       </tr>
                     </tbody>
                   </table>
@@ -180,7 +199,7 @@ X-API-KEY: rdb_a1b2c3d4e5f6...
 
               <div className="flex flex-col gap-2">
                 <h4 className="text-sm font-medium">Request</h4>
-                <CodeBlock title="GET /api/items">{`GET /api/items?limit=10&offset=0&userId=123456789 HTTP/1.1
+                <CodeBlock title="GET /api/items">{`GET /api/items?limit=10&offset=0&userId=123456789&transactionId=TXN-abc-123-def HTTP/1.1
 Host: your-app.vercel.app
 X-API-KEY: rdb_a1b2c3d4e5f6...`}</CodeBlock>
               </div>
@@ -243,9 +262,9 @@ local function recordPurchase(player, productId, amount, gamepassId)
     end)
 
     if success then
-        print("[RDB] Purchase recorded:", response.StatusCode)
+        print("[Hoorks] Purchase recorded:", response.StatusCode)
     else
-        warn("[RDB] Failed to record purchase:", response)
+        warn("[Hoorks] Failed to record purchase:", response)
     end
 end`}</CodeBlock>
             </CardContent>
@@ -256,7 +275,7 @@ end`}</CodeBlock>
       {/* Footer */}
       <footer className="border-t border-border py-8 px-6">
         <div className="mx-auto max-w-4xl flex items-center justify-between text-xs text-muted-foreground">
-          <span>Roblox-Discord Bridge — API Documentation</span>
+          <span>Hoorks — API Documentation</span>
           <Link href="/admin" className="hover:text-foreground transition-colors">
             Admin Dashboard →
           </Link>

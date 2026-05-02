@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Zap, BookOpen, Shield, ArrowRight, Server, MessageSquare } from "lucide-react";
 
 export default function HomePage() {
@@ -11,18 +12,29 @@ export default function HomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
         <div className="mx-auto max-w-5xl flex items-center justify-between px-6 h-14">
           <div className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-md bg-primary">
-              <Zap className="size-4 text-primary-foreground" />
-            </div>
-            <span className="font-semibold text-sm tracking-tight">RDB Bridge</span>
+            <div 
+              className="size-7 bg-primary" 
+              style={{ 
+                maskImage: "url(/logo.svg)", 
+                maskSize: "contain", 
+                maskRepeat: "no-repeat", 
+                maskPosition: "center",
+                WebkitMaskImage: "url(/logo.svg)", 
+                WebkitMaskSize: "contain", 
+                WebkitMaskRepeat: "no-repeat", 
+                WebkitMaskPosition: "center"
+              }} 
+            />
+            <span className="font-semibold text-sm tracking-tight">Hoorks</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
             <Link href="/docs">
               <Button variant="ghost" size="sm">
                 <BookOpen data-icon="inline-start" />
                 Docs
               </Button>
             </Link>
+            <ThemeToggle />
             <Link href="/admin">
               <Button size="sm">
                 Admin
@@ -41,7 +53,7 @@ export default function HomePage() {
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight max-w-3xl leading-tight animate-fade-in glow-text">
           Roblox → Discord
           <br />
-          <span className="text-primary">API Bridge</span>
+          <span className="text-primary">Hoorks Bridge</span>
         </h1>
         <p className="mt-6 text-lg text-muted-foreground max-w-xl animate-slide-up leading-relaxed">
           A serverless API bridge that connects your Roblox game servers to Discord via
@@ -108,7 +120,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-border py-8 px-6">
         <div className="mx-auto max-w-5xl flex items-center justify-between text-xs text-muted-foreground">
-          <span>Roblox-Discord Bridge</span>
+          <span>Hoorks</span>
           <span>Deployed on Vercel</span>
         </div>
       </footer>
