@@ -23,6 +23,7 @@ interface Transaction {
   transaction_id: string;
   timestamp: string;
   created_at: string;
+  item_type?: string | null;
 }
 
 interface AdminOverviewClientProps {

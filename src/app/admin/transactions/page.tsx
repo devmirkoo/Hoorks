@@ -32,7 +32,8 @@ type SortKey =
   | "transaction_id"
   | "is_a_gift"
   | "universe_id"
-  | "created_at";
+  | "created_at"
+  | "item_type";
 
 type SortDirection = "asc" | "desc";
 
@@ -48,6 +49,7 @@ export default function TransactionsPage() {
   const [transactionIdFilter, setTransactionIdFilter] = useState("");
   const [productIdFilter, setProductIdFilter] = useState("");
   const [gamepassIdFilter, setGamepassIdFilter] = useState("");
+  const [itemTypeFilter, setItemTypeFilter] = useState<string>("");
   const [showFilters, setShowFilters] = useState(false);
 
   // Sort
@@ -62,6 +64,7 @@ export default function TransactionsPage() {
     transactionIdFilter ||
     productIdFilter ||
     gamepassIdFilter ||
+    itemTypeFilter ||
     giftFilter !== null;
 
   const activeFilterCount = [
@@ -69,6 +72,7 @@ export default function TransactionsPage() {
     transactionIdFilter,
     productIdFilter,
     gamepassIdFilter,
+    itemTypeFilter,
     giftFilter !== null ? "x" : "",
   ].filter(Boolean).length;
 
@@ -89,6 +93,8 @@ export default function TransactionsPage() {
         params.set("productId", productIdFilter.trim());
       if (gamepassIdFilter.trim())
         params.set("gamepassId", gamepassIdFilter.trim());
+      if (itemTypeFilter)
+        params.set("itemType", itemTypeFilter);
       if (giftFilter !== null)
         params.set("isAGift", giftFilter ? "true" : "false");
 
@@ -108,6 +114,7 @@ export default function TransactionsPage() {
           universe_id: String(row.universe_id),
           place_id: String(row.place_id),
           transaction_id: String(row.transaction_id),
+          item_type: row.item_type ? String(row.item_type) : null,
           timestamp: String(row.timestamp),
           created_at: String(row.created_at),
         })) || []
@@ -124,6 +131,7 @@ export default function TransactionsPage() {
     transactionIdFilter,
     productIdFilter,
     gamepassIdFilter,
+    itemTypeFilter,
     giftFilter,
     sortBy,
     sortOrder,
@@ -138,6 +146,7 @@ export default function TransactionsPage() {
     setTransactionIdFilter("");
     setProductIdFilter("");
     setGamepassIdFilter("");
+    setItemTypeFilter("");
     setGiftFilter(null);
     setOffset(0);
   };
@@ -239,7 +248,7 @@ export default function TransactionsPage() {
             {/* Expandable filter row */}
             <div
               className={cn(
-                "grid grid-cols-1 sm:grid-cols-3 gap-3 overflow-hidden transition-all duration-300 ease-out",
+                "grid grid-cols-1 sm:grid-cols-4 gap-3 overflow-hidden transition-all duration-300 ease-out",
                 showFilters
                   ? "max-h-40 opacity-100"
                   : "max-h-0 opacity-0 pointer-events-none"
@@ -316,6 +325,19 @@ export default function TransactionsPage() {
                   </button>
                 )}
               </div>
+
+              <select
+                value={itemTypeFilter}
+                onChange={(e) => {
+                  setItemTypeFilter(e.target.value);
+                  setOffset(0);
+                }}
+                className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              >
+                <option value="">All Types</option>
+                <option value="Gamepass">Gamepass</option>
+                <option value="DeveloperProduct">DeveloperProduct</option>
+              </select>
             </div>
           </div>
 

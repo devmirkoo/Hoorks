@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
   );
   const userId = searchParams.get("userId");
   const transactionId = searchParams.get("transactionId")
+  const itemType = searchParams.get("itemType");
 
   const database = await db();
 
@@ -47,13 +48,21 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       sql += " WHERE id = ?";
       countSql += " WHERE id = ?"
-      
+
     } else {
       sql += " AND id = ?";
       countSql += " AND id = ?"
     }
     args.push(transactionId)
     countArgs.push(transactionId)
+  }
+
+  if (itemType === "Gamepass" || itemType === "DeveloperProduct") {
+    const hasWhere = userId || transactionId;
+    sql += hasWhere ? " AND item_type = ?" : " WHERE item_type = ?";
+    countSql += hasWhere ? " AND item_type = ?" : " WHERE item_type = ?";
+    args.push(itemType);
+    countArgs.push(itemType);
   }
 
   sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?";

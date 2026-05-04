@@ -60,8 +60,8 @@ export async function POST(request: NextRequest) {
   const createdAt = new Date().toISOString();
 
   await database.execute({
-    sql: `INSERT INTO transactions (id, user_id, product_id, gamepass_id, is_a_gift, gifter_id, amount, universe_id, place_id, transaction_id, timestamp, created_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    sql: `INSERT INTO transactions (id, user_id, product_id, gamepass_id, is_a_gift, gifter_id, amount, universe_id, place_id, transaction_id, timestamp, item_type, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       id,
       data.userId,
@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
       data.placeId,
       data.transactionId,
       data.timestamp,
+      data.itemType,
       createdAt,
     ],
   });

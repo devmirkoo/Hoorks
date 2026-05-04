@@ -11,6 +11,7 @@ interface TransactionData {
   placeId: string;
   transactionId: string;
   timestamp: string;
+  itemType: "Gamepass" | "DeveloperProduct";
 }
 
 async function getWebhookUrl(): Promise<string | null> {
@@ -41,6 +42,11 @@ function buildEmbed(data: TransactionData) {
           { name: "User ID", value: data.userId, inline: true },
           { name: "Product", value: data.productId, inline: true },
           { name: "Amount", value: `R$ ${data.amount}`, inline: true },
+          {
+            name: "Item Type",
+            value: data.itemType,
+            inline: true,
+          },
           {
             name: "Transaction ID",
             value: data.transactionId,

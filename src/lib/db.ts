@@ -34,6 +34,14 @@ export async function initializeDatabase(): Promise<void> {
     await db.execute(statement);
   }
 
+  try {
+    await db.execute(
+      "ALTER TABLE transactions ADD COLUMN item_type TEXT CHECK(item_type IN ('Gamepass','DeveloperProduct'))"
+    );
+  } catch {
+    // Column already exists
+  }
+
   initialized = true;
 }
 

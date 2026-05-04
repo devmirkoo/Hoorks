@@ -17,6 +17,7 @@ import {
   Gift,
   Inbox,
   X,
+  Package,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ export interface Transaction {
   transaction_id: string;
   timestamp: string;
   created_at: string;
+  item_type?: string | null;
 }
 
 type SortKey =
@@ -42,7 +44,8 @@ type SortKey =
   | "transaction_id"
   | "is_a_gift"
   | "universe_id"
-  | "created_at";
+  | "created_at"
+  | "item_type";
 
 type SortDirection = "asc" | "desc";
 
@@ -283,6 +286,14 @@ export function TransactionTable({
             <TableHead>
               <GiftToggle filter={giftFilter} onChange={handleGiftFilter} />
             </TableHead>
+            <TableHead>
+              <SortableHeader
+                label="Type"
+                sortKey="item_type"
+                currentSort={sort}
+                onSort={handleSort}
+              />
+            </TableHead>
             {!compact && (
               <TableHead>
                 <SortableHeader
@@ -328,6 +339,16 @@ export function TransactionTable({
                   >
                     <Gift className="size-3" />
                     Gift
+                  </Badge>
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                )}
+              </TableCell>
+              <TableCell>
+                {tx.item_type ? (
+                  <Badge variant="secondary" className="gap-1">
+                    <Package className="size-3" />
+                    {tx.item_type}
                   </Badge>
                 ) : (
                   <span className="text-xs text-muted-foreground">—</span>

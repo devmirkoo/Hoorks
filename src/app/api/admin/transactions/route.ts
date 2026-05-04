@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
   const productId = searchParams.get("productId");
   const gamepassId = searchParams.get("gamepassId");
   const isAGift = searchParams.get("isAGift"); // "true" | "false" | null
+  const itemType = searchParams.get("itemType"); // "Gamepass" | "DeveloperProduct" | null
 
   // Sorting
   const sortBy = searchParams.get("sortBy") || "created_at";
@@ -40,6 +41,7 @@ export async function GET(request: NextRequest) {
     universe_id: "universe_id",
     created_at: "created_at",
     gamepass_id: "gamepass_id",
+    item_type: "item_type",
   };
 
   const safeSort = allowedSortColumns[sortBy] || "created_at";
@@ -76,6 +78,11 @@ export async function GET(request: NextRequest) {
       conditions.push("is_a_gift = 1");
     } else if (isAGift === "false") {
       conditions.push("is_a_gift = 0");
+    }
+    if (itemType === "Gamepass" || itemType === "DeveloperProduct") {
+      conditions.push("item_type = ?");
+      args.push(itemType);
+      countArgs.push(itemType);
     }
   }
 

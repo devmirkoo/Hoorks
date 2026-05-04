@@ -9,6 +9,7 @@ export interface TransactionInput {
   placeId: string;
   transactionId: string;
   timestamp: string;
+  itemType: "Gamepass" | "DeveloperProduct";
 }
 
 export interface ValidationResult {
@@ -79,6 +80,12 @@ export function validateTransaction(body: unknown): ValidationResult {
     }
   }
 
+  // itemType must be "Gamepass" or "DeveloperProduct"
+  const validItemTypes = ["Gamepass", "DeveloperProduct"];
+  if (!data.itemType || typeof data.itemType !== "string" || !validItemTypes.includes(data.itemType)) {
+    errors.push('"itemType" is required and must be "Gamepass" or "DeveloperProduct"');
+  }
+
   if (errors.length > 0) {
     return { valid: false, errors };
   }
@@ -97,6 +104,7 @@ export function validateTransaction(body: unknown): ValidationResult {
       placeId: data.placeId as string,
       transactionId: data.transactionId as string,
       timestamp: data.timestamp as string,
+      itemType: data.itemType as "Gamepass" | "DeveloperProduct",
     },
   };
 }

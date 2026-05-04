@@ -117,7 +117,8 @@ X-API-KEY: rdb_a1b2c3d4e5f6...
   "universeId": "987654321",
   "placeId": "111222333",
   "transactionId": "TXN-abc-123-def",
-  "timestamp": "2025-01-15T14:30:00Z"
+  "timestamp": "2025-01-15T14:30:00Z",
+  "itemType": "Gamepass"
 }`}</CodeBlock>
               </div>
 
@@ -192,6 +193,11 @@ X-API-KEY: rdb_a1b2c3d4e5f6...
                         <td className="px-4 py-2 text-muted-foreground">—</td>
                         <td className="px-4 py-2 text-muted-foreground">Filter by transaction ID. If provided, other filters are ignored.</td>
                       </tr>
+                      <tr>
+                        <td className="px-4 py-2 font-mono text-primary text-xs">itemType</td>
+                        <td className="px-4 py-2 text-muted-foreground">—</td>
+                        <td className="px-4 py-2 text-muted-foreground">Filter by item type: <code className="text-primary font-mono text-xs bg-primary/10 px-1 py-0.5 rounded">Gamepass</code> or <code className="text-primary font-mono text-xs bg-primary/10 px-1 py-0.5 rounded">DeveloperProduct</code></td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -199,7 +205,7 @@ X-API-KEY: rdb_a1b2c3d4e5f6...
 
               <div className="flex flex-col gap-2">
                 <h4 className="text-sm font-medium">Request</h4>
-                <CodeBlock title="GET /api/items">{`GET /api/items?limit=10&offset=0&userId=123456789&transactionId=TXN-abc-123-def HTTP/1.1
+                <CodeBlock title="GET /api/items">{`GET /api/items?limit=10&offset=0&userId=123456789&itemType=Gamepass HTTP/1.1
 Host: your-app.vercel.app
 X-API-KEY: rdb_a1b2c3d4e5f6...`}</CodeBlock>
               </div>
@@ -231,12 +237,35 @@ X-API-KEY: rdb_a1b2c3d4e5f6...`}</CodeBlock>
                 Ready-to-use Lua snippet for your Roblox game. Drop this into a server Script.
               </p>
               <CodeBlock title="ServerScript.lua">{`local HttpService = game:GetService("HttpService")
+local MarketplaceService = game:GetService("MarketplaceService")
 
-local API_URL = "https://your-app.vercel.app/api/make-buy"
-local API_KEY = "rdb_your_key_here"
+local API_URL: string = "https://your-app.vercel.app/api/make-buy"
+local API_KEY: string = "rdb_your_key_here"
 
-local function recordPurchase(player, productId, amount, gamepassId)
-    local data = {
+export type ItemType = "Gamepass" | "DeveloperProduct"
+
+type PurchaseData = {
+    userId: string,
+    productId: string,
+    gamepassId: string?,
+    isAGift: boolean,
+    gifterId: string?,
+    amount: number,
+    universeId: string,
+    placeId: string,
+    transactionId: string,
+    timestamp: string,
+    itemType: ItemType,
+}
+
+local function recordPurchase(
+    player: Player,
+    productId: string,
+    amount: number,
+    itemType: ItemType,
+    gamepassId: string?
+)
+    local data: PurchaseData = {
         userId = tostring(player.UserId),
         productId = productId,
         gamepassId = gamepassId,
@@ -246,10 +275,11 @@ local function recordPurchase(player, productId, amount, gamepassId)
         universeId = tostring(game.GameId),
         placeId = tostring(game.PlaceId),
         transactionId = HttpService:GenerateGUID(false),
-        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
+        itemType = itemType,
     }
 
-    local success, response = pcall(function()
+    local success: boolean, response = pcall(function()
         return HttpService:RequestAsync({
             Url = API_URL,
             Method = "POST",
@@ -266,6 +296,42 @@ local function recordPurchase(player, productId, amount, gamepassId)
     else
         warn("[Hoorks] Failed to record purchase:", response)
     end
+end
+
+-- Gamepass purchase callback
+MarketplaceService.PromptGamePassPurchaseFinished:Connect(
+    function(player: Player, gamepassId: number, wasPurchased: boolean)
+        if not wasPurchased then return end
+        local info = MarketplaceService:GetProductInfo(gamepassId, Enum.InfoType.GamePass)
+        recordPurchase(
+            player,
+            info.Name or tostring(gamepassId),
+            info.PriceInRobux or 0,
+            "Gamepass",
+            tostring(gamepassId)
+        )
+    end
+)
+
+-- Developer Product purchase callback
+MarketplaceService.ProcessReceipt = function(receiptInfo: {
+    PlayerId: number,
+    ProductId: number,
+    PurchaseId: string,
+})
+    local player: Player? = game:GetService("Players"):GetPlayerByUserId(receiptInfo.PlayerId)
+    if not player then return Enum.ProductPurchaseDecision.NotProcessedYet end
+
+    local info = MarketplaceService:GetProductInfo(receiptInfo.ProductId, Enum.InfoType.Product)
+    recordPurchase(
+        player,
+        info.Name or tostring(receiptInfo.ProductId),
+        info.PriceInRobux or 0,
+        "DeveloperProduct",
+        nil
+    )
+
+    return Enum.ProductPurchaseDecision.PurchaseGranted
 end`}</CodeBlock>
             </CardContent>
           </Card>

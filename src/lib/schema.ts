@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   place_id TEXT NOT NULL,
   transaction_id TEXT UNIQUE NOT NULL,
   timestamp TEXT NOT NULL,
+  item_type TEXT CHECK(item_type IN ('Gamepass','DeveloperProduct')),
   created_at TEXT DEFAULT (datetime('now'))
 );
 
