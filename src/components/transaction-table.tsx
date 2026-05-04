@@ -17,7 +17,8 @@ import {
   Gift,
   Inbox,
   X,
-  Package,
+  Ticket,
+  ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -347,7 +348,11 @@ export function TransactionTable({
               <TableCell>
                 {tx.item_type ? (
                   <Badge variant="secondary" className="gap-1">
-                    <Package className="size-3" />
+                    {tx.item_type === "Gamepass" ? (
+                      <Ticket className="size-3" />
+                    ) : (
+                      <ShoppingCart className="size-3" />
+                    )}
                     {tx.item_type}
                   </Badge>
                 ) : (

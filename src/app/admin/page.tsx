@@ -78,6 +78,7 @@ export default async function AdminOverviewPage() {
       transaction_id: String(row.transaction_id),
       timestamp: String(row.timestamp),
       created_at: String(row.created_at),
+      item_type: row.item_type ? String(row.item_type) : null,
     }));
 
     return (
