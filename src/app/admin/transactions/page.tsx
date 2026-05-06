@@ -31,6 +31,7 @@ type SortKey =
   | "amount"
   | "transaction_id"
   | "is_a_gift"
+  | "gifter_id"
   | "universe_id"
   | "created_at"
   | "item_type";
@@ -49,6 +50,7 @@ export default function TransactionsPage() {
   const [transactionIdFilter, setTransactionIdFilter] = useState("");
   const [productIdFilter, setProductIdFilter] = useState("");
   const [gamepassIdFilter, setGamepassIdFilter] = useState("");
+  const [gifterIdFilter, setGifterIdFilter] = useState("");
   const [itemTypeFilter, setItemTypeFilter] = useState<string>("");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -64,6 +66,7 @@ export default function TransactionsPage() {
     transactionIdFilter ||
     productIdFilter ||
     gamepassIdFilter ||
+    gifterIdFilter ||
     itemTypeFilter ||
     giftFilter !== null;
 
@@ -72,6 +75,7 @@ export default function TransactionsPage() {
     transactionIdFilter,
     productIdFilter,
     gamepassIdFilter,
+    gifterIdFilter,
     itemTypeFilter,
     giftFilter !== null ? "x" : "",
   ].filter(Boolean).length;
@@ -93,6 +97,8 @@ export default function TransactionsPage() {
         params.set("productId", productIdFilter.trim());
       if (gamepassIdFilter.trim())
         params.set("gamepassId", gamepassIdFilter.trim());
+      if (gifterIdFilter.trim())
+        params.set("gifterId", gifterIdFilter.trim());
       if (itemTypeFilter)
         params.set("itemType", itemTypeFilter);
       if (giftFilter !== null)
@@ -131,6 +137,7 @@ export default function TransactionsPage() {
     transactionIdFilter,
     productIdFilter,
     gamepassIdFilter,
+    gifterIdFilter,
     itemTypeFilter,
     giftFilter,
     sortBy,
@@ -146,6 +153,7 @@ export default function TransactionsPage() {
     setTransactionIdFilter("");
     setProductIdFilter("");
     setGamepassIdFilter("");
+    setGifterIdFilter("");
     setItemTypeFilter("");
     setGiftFilter(null);
     setOffset(0);
@@ -248,7 +256,7 @@ export default function TransactionsPage() {
             {/* Expandable filter row */}
             <div
               className={cn(
-                "grid grid-cols-1 sm:grid-cols-4 gap-3 overflow-hidden transition-all duration-300 ease-out",
+                "grid grid-cols-1 sm:grid-cols-5 gap-3 overflow-hidden transition-all duration-300 ease-out",
                 showFilters
                   ? "max-h-40 opacity-100"
                   : "max-h-0 opacity-0 pointer-events-none"
@@ -317,6 +325,33 @@ export default function TransactionsPage() {
                   <button
                     onClick={() => {
                       setGamepassIdFilter("");
+                      setOffset(0);
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="relative">
+                <Input
+                  id="filter-gifter-id"
+                  placeholder="Gifter ID..."
+                  value={gifterIdFilter}
+                  onChange={(e) => {
+                    const nextValue = e.target.value;
+                    setGifterIdFilter(nextValue);
+                    setGiftFilter(nextValue.trim() ? true : null);
+                    setOffset(0);
+                  }}
+                  className="text-sm"
+                />
+                {gifterIdFilter && (
+                  <button
+                    onClick={() => {
+                      setGifterIdFilter("");
+                      setGiftFilter(null);
                       setOffset(0);
                     }}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"

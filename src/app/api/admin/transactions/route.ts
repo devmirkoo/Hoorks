@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
   const transactionId = searchParams.get("transactionId");
   const productId = searchParams.get("productId");
   const gamepassId = searchParams.get("gamepassId");
+  const gifterId = searchParams.get("gifterId");
   const isAGift = searchParams.get("isAGift"); // "true" | "false" | null
   const itemType = searchParams.get("itemType"); // "Gamepass" | "DeveloperProduct" | null
 
@@ -38,6 +39,7 @@ export async function GET(request: NextRequest) {
     amount: "amount",
     transaction_id: "transaction_id",
     is_a_gift: "is_a_gift",
+    gifter_id: "gifter_id",
     universe_id: "universe_id",
     created_at: "created_at",
     gamepass_id: "gamepass_id",
@@ -73,6 +75,11 @@ export async function GET(request: NextRequest) {
       conditions.push("gamepass_id = ?");
       args.push(gamepassId);
       countArgs.push(gamepassId);
+    }
+    if (gifterId) {
+      conditions.push("gifter_id = ?");
+      args.push(gifterId);
+      countArgs.push(gifterId);
     }
     if (isAGift === "true") {
       conditions.push("is_a_gift = 1");

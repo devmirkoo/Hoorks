@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
     0
   );
   const userId = searchParams.get("userId");
-  const transactionId = searchParams.get("transactionId")
+  const transactionId = searchParams.get("transactionId");
+  const gifterId = searchParams.get("gifterId");
   const itemType = searchParams.get("itemType");
 
   const database = await db();
@@ -47,18 +48,26 @@ export async function GET(request: NextRequest) {
   if (transactionId) {
     if (!userId) {
       sql += " WHERE id = ?";
-      countSql += " WHERE id = ?"
+      countSql += " WHERE id = ?";
 
     } else {
       sql += " AND id = ?";
-      countSql += " AND id = ?"
+      countSql += " AND id = ?";
     }
-    args.push(transactionId)
-    countArgs.push(transactionId)
+    args.push(transactionId);
+    countArgs.push(transactionId);
+  }
+
+  if (gifterId) {
+    const hasWhere = userId || transactionId;
+    sql += hasWhere ? " AND gifter_id = ?" : " WHERE gifter_id = ?";
+    countSql += hasWhere ? " AND gifter_id = ?" : " WHERE gifter_id = ?";
+    args.push(gifterId);
+    countArgs.push(gifterId);
   }
 
   if (itemType === "Gamepass" || itemType === "DeveloperProduct") {
-    const hasWhere = userId || transactionId;
+    const hasWhere = userId || transactionId || gifterId;
     sql += hasWhere ? " AND item_type = ?" : " WHERE item_type = ?";
     countSql += hasWhere ? " AND item_type = ?" : " WHERE item_type = ?";
     args.push(itemType);
