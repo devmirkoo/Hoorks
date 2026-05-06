@@ -9,11 +9,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  Copy,
   Gift,
   Inbox,
   X,
@@ -21,6 +29,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export interface Transaction {
   id: string;
@@ -44,6 +53,7 @@ type SortKey =
   | "amount"
   | "transaction_id"
   | "is_a_gift"
+  | "gifter_id"
   | "universe_id"
   | "created_at"
   | "item_type";
@@ -160,6 +170,27 @@ function GiftToggle({
   );
 }
 
+function TransactionIdCell({ value }: { value: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="truncate max-w-[200px] text-left"
+        >
+          {value}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" sideOffset={8}>
+        {value}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 export function TransactionTable({
   transactions,
   compact = false,
@@ -195,6 +226,15 @@ export function TransactionTable({
       onGiftFilterChange(val);
     } else {
       setLocalGiftFilter(val);
+    }
+  };
+
+  const handleCopy = async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success("Transaction ID copied");
+    } catch {
+      toast.error("Copy failed");
     }
   };
 
@@ -247,7 +287,8 @@ export function TransactionTable({
 
   return (
     <div className="overflow-x-auto">
-      <Table>
+      <TooltipProvider delayDuration={500}>
+        <Table>
         <TableHeader>
           <TableRow>
             <TableHead>
@@ -276,17 +317,24 @@ export function TransactionTable({
             </TableHead>
             {!compact && (
               <TableHead>
-                <SortableHeader
-                  label="TXN ID"
-                  sortKey="transaction_id"
-                  currentSort={sort}
-                  onSort={handleSort}
-                />
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  TXN ID
+                </span>
               </TableHead>
             )}
             <TableHead>
               <GiftToggle filter={giftFilter} onChange={handleGiftFilter} />
             </TableHead>
+            {!compact && (
+              <TableHead>
+                <SortableHeader
+                  label="Gifter"
+                  sortKey="gifter_id"
+                  currentSort={sort}
+                  onSort={handleSort}
+                />
+              </TableHead>
+            )}
             <TableHead>
               <SortableHeader
                 label="Type"
@@ -328,8 +376,18 @@ export function TransactionTable({
                 R$ {Number(tx.amount).toLocaleString()}
               </TableCell>
               {!compact && (
-                <TableCell className="font-mono text-xs text-muted-foreground truncate max-w-[200px]">
-                  {tx.transaction_id}
+                <TableCell className="font-mono text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <TransactionIdCell value={tx.transaction_id} />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleCopy(tx.transaction_id)}
+                      aria-label="Copy transaction ID"
+                    >
+                      <Copy data-icon="inline-start" />
+                    </Button>
+                  </div>
                 </TableCell>
               )}
               <TableCell>
@@ -345,6 +403,11 @@ export function TransactionTable({
                   <span className="text-xs text-muted-foreground">—</span>
                 )}
               </TableCell>
+              {!compact && (
+                <TableCell className="font-mono text-xs text-muted-foreground">
+                  {tx.gifter_id || "—"}
+                </TableCell>
+              )}
               <TableCell>
                 {tx.item_type ? (
                   <Badge variant="secondary" className="gap-1">
@@ -375,7 +438,8 @@ export function TransactionTable({
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+        </Table>
+      </TooltipProvider>
     </div>
   );
 }
