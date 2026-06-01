@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { AdminSidebar } from "@/components/admin-sidebar";
 import { TransactionTable } from "@/components/transaction-table";
 import type { Transaction } from "@/components/transaction-table";
@@ -80,57 +80,65 @@ export default function TransactionsPage() {
     giftFilter !== null ? "x" : "",
   ].filter(Boolean).length;
 
-  const fetchTransactions = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        limit: String(limit),
-        offset: String(offset),
-        sortBy,
-        sortOrder,
-      });
 
-      if (userIdFilter.trim()) params.set("userId", userIdFilter.trim());
-      if (transactionIdFilter.trim())
-        params.set("transactionId", transactionIdFilter.trim());
-      if (productIdFilter.trim())
-        params.set("productId", productIdFilter.trim());
-      if (gamepassIdFilter.trim())
-        params.set("gamepassId", gamepassIdFilter.trim());
-      if (gifterIdFilter.trim())
-        params.set("gifterId", gifterIdFilter.trim());
-      if (itemTypeFilter)
-        params.set("itemType", itemTypeFilter);
-      if (giftFilter !== null)
-        params.set("isAGift", giftFilter ? "true" : "false");
+  useEffect(() => {
+    let ignore = false;
+    async function load() {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          limit: String(limit),
+          offset: String(offset),
+          sortBy,
+          sortOrder,
+        });
 
-      const res = await fetch(`/api/admin/transactions?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
+        if (userIdFilter.trim()) params.set("userId", userIdFilter.trim());
+        if (transactionIdFilter.trim())
+          params.set("transactionId", transactionIdFilter.trim());
+        if (productIdFilter.trim())
+          params.set("productId", productIdFilter.trim());
+        if (gamepassIdFilter.trim())
+          params.set("gamepassId", gamepassIdFilter.trim());
+        if (gifterIdFilter.trim())
+          params.set("gifterId", gifterIdFilter.trim());
+        if (itemTypeFilter)
+          params.set("itemType", itemTypeFilter);
+        if (giftFilter !== null)
+          params.set("isAGift", giftFilter ? "true" : "false");
 
-      setTransactions(
-        data.data?.map((row: Record<string, unknown>) => ({
-          id: String(row.id),
-          user_id: String(row.user_id),
-          product_id: String(row.product_id),
-          gamepass_id: row.gamepass_id ? String(row.gamepass_id) : null,
-          is_a_gift: Number(row.is_a_gift),
-          gifter_id: row.gifter_id ? String(row.gifter_id) : null,
-          amount: Number(row.amount),
-          universe_id: String(row.universe_id),
-          place_id: String(row.place_id),
-          transaction_id: String(row.transaction_id),
-          item_type: row.item_type ? String(row.item_type) : null,
-          timestamp: String(row.timestamp),
-          created_at: String(row.created_at),
-        })) || []
-      );
-      setTotal(data.pagination?.total || 0);
-    } catch {
-      toast.error("Failed to fetch transactions");
-    } finally {
-      setLoading(false);
+        const res = await fetch(`/api/admin/transactions?${params}`);
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
+
+        if (!ignore) {
+          setTransactions(
+            data.data?.map((row: Record<string, unknown>) => ({
+              id: String(row.id),
+              user_id: String(row.user_id),
+              product_id: String(row.product_id),
+              gamepass_id: row.gamepass_id ? String(row.gamepass_id) : null,
+              is_a_gift: Number(row.is_a_gift),
+              gifter_id: row.gifter_id ? String(row.gifter_id) : null,
+              amount: Number(row.amount),
+              universe_id: String(row.universe_id),
+              place_id: String(row.place_id),
+              transaction_id: String(row.transaction_id),
+              item_type: row.item_type ? String(row.item_type) : null,
+              timestamp: String(row.timestamp),
+              created_at: String(row.created_at),
+            })) || []
+          );
+          setTotal(data.pagination?.total || 0);
+        }
+      } catch {
+        if (!ignore) toast.error("Failed to fetch transactions");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
     }
+    load();
+    return () => { ignore = true; };
   }, [
     offset,
     userIdFilter,
@@ -143,10 +151,6 @@ export default function TransactionsPage() {
     sortBy,
     sortOrder,
   ]);
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
 
   const clearAllFilters = () => {
     setUserIdFilter("");

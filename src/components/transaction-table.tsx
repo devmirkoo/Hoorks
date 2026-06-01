@@ -254,8 +254,8 @@ export function TransactionTable({
     // Sort
     filtered.sort((a, b) => {
       const key = sort.key;
-      let valA = a[key];
-      let valB = b[key];
+      const valA = a[key];
+      const valB = b[key];
 
       // Numeric comparison for amount and is_a_gift
       if (key === "amount" || key === "is_a_gift") {

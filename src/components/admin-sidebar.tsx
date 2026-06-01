@@ -13,7 +13,6 @@ import {
   Key,
   Settings,
   LogOut,
-  Zap,
   BookOpen,
 } from "lucide-react";
 

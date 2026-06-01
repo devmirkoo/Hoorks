@@ -1,7 +1,3 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/jwt";
-import { AdminSidebar } from "@/components/admin-sidebar";
-
 export default async function AdminLayout({
   children,
 }: {

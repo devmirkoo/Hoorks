@@ -30,8 +30,24 @@ export default function ApiKeysPage() {
   }, []);
 
   useEffect(() => {
-    fetchKeys();
-  }, [fetchKeys]);
+    let ignore = false;
+    async function load() {
+      try {
+        const res = await fetch("/api/admin/keys");
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
+        if (!ignore) {
+          setApiKeys(data.data || []);
+        }
+      } catch {
+        if (!ignore) toast.error("Failed to load API keys");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    load();
+    return () => { ignore = true; };
+  }, []);
 
   return (
     <div className="flex min-h-screen">
@@ -41,7 +57,7 @@ export default function ApiKeysPage() {
           <div className="animate-fade-in">
             <h1 className="text-3xl font-bold tracking-tight">API Keys</h1>
             <p className="text-muted-foreground mt-1">
-              Generate and manage authentication keys for your Roblox servers
+              Generate and manage authentication keys for your game servers
             </p>
           </div>
           {loading ? (

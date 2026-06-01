@@ -1,4 +1,4 @@
-import { createHash, timingSafeEqual } from "crypto";
+import { createHash, timingSafeEqual, randomBytes } from "crypto";
 import { db } from "../db";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -55,7 +55,7 @@ export async function validateApiKey(
 }
 
 export function generateApiKey(): { raw: string; hash: string } {
-  const bytes = require("crypto").randomBytes(36);
+  const bytes = randomBytes(36);
   const key = `rdb_${bytes.toString("base64url")}`;
   return {
     raw: key,

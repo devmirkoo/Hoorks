@@ -88,7 +88,7 @@ export function ApiKeyCard({ apiKeys, onRefresh }: ApiKeyCardProps) {
             <div>
               <CardTitle>API Keys</CardTitle>
               <CardDescription>
-                Manage your API keys for Roblox server authentication
+                Manage your API keys for game server authentication
               </CardDescription>
             </div>
           </div>
@@ -186,7 +186,7 @@ export function ApiKeyCard({ apiKeys, onRefresh }: ApiKeyCardProps) {
             </div>
             <p className="text-xs text-muted-foreground">
               Store this key securely. Use it in the <code>X-API-KEY</code>{" "}
-              header for all API requests from your Roblox game server.
+              header for all API requests from your game server.
             </p>
           </div>
         </DialogContent>

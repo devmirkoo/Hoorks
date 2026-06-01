@@ -67,7 +67,7 @@ export default function SettingsPage() {
         <div className="flex flex-col gap-6 p-6 grid-noise min-h-screen">
           <div className="animate-fade-in">
             <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-            <p className="text-muted-foreground mt-1">Configure your bridge integrations</p>
+            <p className="text-muted-foreground mt-1">Configure your Hoorks integrations</p>
           </div>
 
           {/* Discord Webhook */}

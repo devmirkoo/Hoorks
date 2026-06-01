@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Zap, UserPlus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 
 export default function SetupPage() {
   const router = useRouter();

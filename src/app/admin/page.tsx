@@ -11,13 +11,13 @@ function getErrorMessage(error: unknown): string {
   return String(error);
 }
 
-export default async function AdminOverviewPage() {
-  // Try to connect to DB — if credentials are bad, show a helpful error
+async function fetchPageData() {
+  // Try to connect to DB — if credentials are bad, return error
   let database;
   try {
     database = await db();
   } catch (error) {
-    return <DbErrorPage message={getErrorMessage(error)} />;
+    return { error: getErrorMessage(error) };
   }
 
   const session = await getSession();
@@ -32,7 +32,7 @@ export default async function AdminOverviewPage() {
       if (!hasAdmin) redirect("/admin/setup");
     } catch (error) {
       if (isRedirectError(error)) throw error;
-      return <DbErrorPage message={getErrorMessage(error)} />;
+      return { error: getErrorMessage(error) };
     }
     redirect("/admin/login");
   }
@@ -81,19 +81,29 @@ export default async function AdminOverviewPage() {
       item_type: row.item_type ? String(row.item_type) : null,
     }));
 
-    return (
-      <div className="flex min-h-screen">
-        <AdminSidebar />
-        <main className="flex-1 ml-64">
-          <AdminOverviewClient
-            stats={stats}
-            recentTransactions={recentTransactions}
-          />
-        </main>
-      </div>
-    );
+    return { stats, recentTransactions };
   } catch (error) {
     if (isRedirectError(error)) throw error;
-    return <DbErrorPage message={getErrorMessage(error)} />;
+    return { error: getErrorMessage(error) };
   }
+}
+
+export default async function AdminOverviewPage() {
+  const data = await fetchPageData();
+
+  if ("error" in data) {
+    return <DbErrorPage message={data.error as string} />;
+  }
+
+  return (
+    <div className="flex min-h-screen">
+      <AdminSidebar />
+      <main className="flex-1 ml-64">
+        <AdminOverviewClient
+          stats={data.stats!}
+          recentTransactions={data.recentTransactions!}
+        />
+      </main>
+    </div>
+  );
 }
