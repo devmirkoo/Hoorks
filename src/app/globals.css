@@ -203,6 +203,17 @@
   .animate-pulse-glow {
     animation: pulseGlow 3s ease-in-out infinite;
   }
+
+  .animate-text-gradient {
+    background-size: 200% auto;
+    animation: textGradient 8s linear infinite;
+  }
+}
+
+@keyframes textGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @keyframes fadeIn {

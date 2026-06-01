@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Zap, BookOpen, Shield, ArrowRight, Server, MessageSquare } from "lucide-react";
+import { BookOpen, Shield, ArrowRight, Server, MessageSquare } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -47,17 +47,23 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="flex flex-col items-center justify-center text-center pt-32 pb-20 px-6">
-        <Badge variant="outline" className="mb-6 animate-fade-in border-primary/30 text-primary">
-          Serverless • Secure • Deploy-Ready
+        <Badge variant="outline" className="mb-8 animate-fade-in border-primary/30 text-primary">
+          Roblox to Discord • Secure • Deploy-Ready
         </Badge>
-        <h1 className="text-5xl md:text-6xl font-bold tracking-tight max-w-3xl leading-tight animate-fade-in glow-text">
-          Roblox → Discord
-          <br />
-          <span className="text-primary">Hoorks Bridge</span>
+
+        <h1 className="text-6xl md:text-8xl font-bold tracking-tight max-w-3xl leading-tight animate-fade-in pb-2">
+          <span className="bg-gradient-to-r from-primary via-primary/60 to-primary bg-clip-text text-transparent animate-text-gradient">
+            Hoorks
+          </span>
         </h1>
+
+        <h2 className="text-2xl md:text-3xl font-medium mt-4 text-foreground/90 animate-fade-in">
+          Simple. Lightweight. Fast. Secure.
+        </h2>
+
         <p className="mt-6 text-lg text-muted-foreground max-w-xl animate-slide-up leading-relaxed">
-          A serverless API bridge that connects your Roblox game servers to Discord via
-          webhooks. Track purchases, manage API keys, and receive real-time notifications.
+          A powerful serverless API platform designed to seamlessly connect your Roblox 
+          game servers to Discord. Track purchases, manage API keys, and receive real-time notifications.
         </p>
         <div className="flex gap-3 mt-8 animate-slide-up" style={{ animationDelay: "200ms" }}>
           <Link href="/docs">
@@ -119,9 +125,17 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-border py-8 px-6">
-        <div className="mx-auto max-w-5xl flex items-center justify-between text-xs text-muted-foreground">
+        <div className="mx-auto max-w-5xl flex flex-col gap-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span>Hoorks</span>
-          <span>Deployed on Vercel</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/terms" className="hover:text-foreground transition-colors">
+              Terms
+            </Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <span>Deployed on Vercel</span>
+          </div>
         </div>
       </footer>
     </div>

@@ -20,7 +20,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Hoorks",
   description:
-    "Serverless API bridge connecting Roblox game servers to Discord via webhooks. Secure, fast, and deploy-ready on Vercel.",
+    "Serverless API platform connecting Roblox game servers to Discord. Secure, fast, and deploy-ready.",
 };
 
 export default function RootLayout({
