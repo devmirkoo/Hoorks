@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": false,
   "description": "A serverless Next.js API bridge that connects Roblox game servers to Discord via webhooks — track purchases, manage transactions, and receive real-time notifications.",
+  "author": "devmirkoo",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/devmirkoo/Hoorks.git"
