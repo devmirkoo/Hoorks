@@ -1,7 +1,29 @@
 {
   "name": "roblox-discord-bridge",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "description": "A serverless Next.js API bridge that connects Roblox game servers to Discord via webhooks — track purchases, manage transactions, and receive real-time notifications.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devmirkoo/Hoorks.git"
+  },
+  "homepage": "https://github.com/devmirkoo/Hoorks#readme",
+  "bugs": {
+    "url": "https://github.com/devmirkoo/Hoorks/issues"
+  },
+  "keywords": [
+    "roblox",
+    "discord",
+    "webhook",
+    "bridge",
+    "gamepass",
+    "developer-product",
+    "next.js",
+    "typescript",
+    "turso",
+    "vercel"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
