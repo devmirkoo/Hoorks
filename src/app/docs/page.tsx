@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Zap, ArrowLeft, Copy } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 const LUA_KEYWORDS = new Set([
   "and",
@@ -297,7 +297,7 @@ const DOCS_TOC: TocItem[] = [
       { label: "Response", href: "#get-response" },
     ],
   },
-  { label: "Roblox Lua Integration", href: "#lua-integration" },
+  { label: "Lua Integration", href: "#lua-integration" },
 ];
 
 function TocList({ items }: { items: TocItem[] }) {
@@ -375,7 +375,7 @@ export default function DocsPage() {
             Documentation
           </h1>
           <p className="text-muted-foreground max-w-2xl leading-relaxed">
-            Everything you need to integrate your Roblox game with the Hoorks API.
+            Everything you need to integrate your game with the Hoorks API.
             Follow these examples to start sending purchase notifications.
           </p>
         </div>
@@ -457,7 +457,7 @@ export default function DocsPage() {
                       <tr className="border-b border-border">
                         <td className="px-4 py-2 font-mono text-primary text-xs">userId</td>
                         <td className="px-4 py-2 text-muted-foreground">string</td>
-                        <td className="px-4 py-2 text-muted-foreground">Roblox user ID of the buyer</td>
+                        <td className="px-4 py-2 text-muted-foreground">User ID of the buyer</td>
                       </tr>
                       <tr className="border-b border-border">
                         <td className="px-4 py-2 font-mono text-primary text-xs">productId</td>
@@ -477,7 +477,7 @@ export default function DocsPage() {
                       <tr className="border-b border-border">
                         <td className="px-4 py-2 font-mono text-primary text-xs">gifterId</td>
                         <td className="px-4 py-2 text-muted-foreground">string | null</td>
-                        <td className="px-4 py-2 text-muted-foreground">Roblox user ID of the gifter</td>
+                        <td className="px-4 py-2 text-muted-foreground">User ID of the gifter</td>
                       </tr>
                       <tr className="border-b border-border">
                         <td className="px-4 py-2 font-mono text-primary text-xs">amount</td>
@@ -487,12 +487,12 @@ export default function DocsPage() {
                       <tr className="border-b border-border">
                         <td className="px-4 py-2 font-mono text-primary text-xs">universeId</td>
                         <td className="px-4 py-2 text-muted-foreground">string</td>
-                        <td className="px-4 py-2 text-muted-foreground">Roblox universe ID</td>
+                        <td className="px-4 py-2 text-muted-foreground">Universe ID</td>
                       </tr>
                       <tr className="border-b border-border">
                         <td className="px-4 py-2 font-mono text-primary text-xs">placeId</td>
                         <td className="px-4 py-2 text-muted-foreground">string</td>
-                        <td className="px-4 py-2 text-muted-foreground">Roblox place ID</td>
+                        <td className="px-4 py-2 text-muted-foreground">Place ID</td>
                       </tr>
                       <tr className="border-b border-border">
                         <td className="px-4 py-2 font-mono text-primary text-xs">transactionId</td>
@@ -700,18 +700,18 @@ X-API-KEY: rdb_a1b2c3d4e5f6...`}</CodeBlock>
 
           <Separator />
 
-          {/* Roblox Lua Example */}
+          {/* Lua Example */}
           <Card
             id="lua-integration"
             className="glow-border animate-slide-up scroll-mt-24"
             style={{ animationDelay: "300ms" }}
           >
             <CardHeader>
-              <CardTitle>Roblox Lua Integration</CardTitle>
+              <CardTitle>Lua Integration</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <p className="text-sm text-muted-foreground">
-                Ready-to-use Lua snippet for your Roblox game. Drop this into a server Script.
+                Ready-to-use Lua snippet for your game. Drop this into a server Script.
               </p>
                 <CodeBlock title="ServerScript.lua" language="lua">
                 {highlightLua(LUA_SNIPPET)}
@@ -724,11 +724,19 @@ X-API-KEY: rdb_a1b2c3d4e5f6...`}</CodeBlock>
 
       {/* Footer */}
       <footer className="border-t border-border py-8 px-6">
-        <div className="mx-auto max-w-4xl flex items-center justify-between text-xs text-muted-foreground">
+        <div className="mx-auto max-w-4xl flex flex-col gap-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span>Hoorks — API Documentation</span>
-          <Link href="/admin" className="hover:text-foreground transition-colors">
-            Admin Dashboard →
-          </Link>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/terms" className="hover:text-foreground transition-colors">
+              Terms
+            </Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <Link href="/admin" className="hover:text-foreground transition-colors">
+              Admin Dashboard →
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
