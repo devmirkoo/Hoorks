@@ -1,8 +1,10 @@
 <div align="center">
 
-# 🌉 Roblox-Discord Bridge
+<img src="./public/logo.svg" alt="Hoorks Logo" width="120" />
 
-**A serverless Next.js API bridge that connects Roblox game servers to Discord via webhooks — track purchases, manage transactions, and receive real-time notifications.**
+# Hoorks
+
+**A serverless Next.js API platform that connects Roblox game servers to Discord via webhooks — track purchases, manage transactions, and receive real-time notifications.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -241,7 +243,7 @@ cp .env.example .env.local
 
 ---
 
-## ▲ Deployment
+## Deployment
 
 ### One-Click Deploy on Vercel
 
@@ -272,7 +274,7 @@ Contributions are welcome! Please read the [Contributing Guide](CONTRIBUTING.md)
 
 ---
 
-## 🛡️ Security
+## Security
 
 If you discover a security vulnerability, please **do not** open a public issue. Instead, follow the responsible disclosure process outlined in [SECURITY.md](SECURITY.md).
 
@@ -291,3 +293,4 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 Built with ❤️ by [devmirkoo](https://github.com/devmirkoo)
 
 </div>
+v>
